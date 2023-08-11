@@ -1,13 +1,28 @@
 const mysql = require('mysql')
-const pool = require('../sql/connection')
+const db = require('../sql/connection')
 const { handleSQLError } = require('../sql/error')
 
 const getAllUsers = (req, res) => {
   // SELECT ALL USERS
-  pool.query("SELECT * FROM users", (err, rows) => {
-    if (err) return handleSQLError(res, err)
+  let sql ="select first_name, last_name, address, city, county, state, zip, phone1, phone2, email ";
+  sql += "from users u join usersAddress ua on u.id = ua.user_id join usersContact uc on u.id = uc.user_id"
+
+  console.log(sql)
+  
+db.query(sql, (err, rows) => {
+  if(err) {
+    console.log("getAllUsers query failed", err)
+    res.sendStatus(500) // it was server's fault
+  } else {
     return res.json(rows);
-  })
+  }
+})
+
+  // OLDER SYNTAX
+  // db.query("SELECT * FROM users", (err, rows) => {
+  //   if (err) return handleSQLError(res, err)
+  //   return res.json(rows);
+  // })
 }
 
 const getUserById = (req, res) => {

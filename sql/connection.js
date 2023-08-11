@@ -1,24 +1,56 @@
+require('dotenv').config();
+
 const mysql = require('mysql')
 
-class Connection {
-  constructor() {
-    if (!this.pool) {
-      console.log('creating connection...')
-      this.pool = mysql.createPool({
-        connectionLimit: 100,
-        host: 'localhost',
-        user: 'root',
-        password: 'password',
-        database: 'admin'
-      })
-
-      return this.pool
-    }
-
-    return this.pool
+//define the connection
+let connection = mysql.createConnection(
+  {
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PWD,
+    database: process.env.DB_NAME
   }
-}
+);
 
-const instance = new Connection()
+//make the connection
+connection.connect();
 
-module.exports = instance;
+// make an async call to test the connection
+
+connection.query("select now()", (err, rows) => {
+  if(err){
+    console.log("Connection not successful", err)
+  } else {
+    console.log("Connection successful", rows)
+  }
+});
+
+
+
+module.exports = connection;
+
+
+
+// class based connectoin
+// class Connection {
+//   constructor() {
+//     if (!this.pool) {
+//       console.log('creating connection...')
+//       this.pool = mysql.createPool({
+//         connectionLimit: 100,
+//         host: 'process.env.DB_HOST',
+//         user: 'process.env.DB_USER',
+//         password: 'process.env.DB_PWD',
+//         database: 'process.env.DB_NAME'
+//       })
+
+//       return this.pool
+//     }
+
+//     return this.pool
+//   }
+// }
+
+// const instance = new Connection()
+
+// module.exports = instance;
